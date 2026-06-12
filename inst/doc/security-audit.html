@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Security audit (mx.crypto 0.2.0)</title>
+  <style>
+html {
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 12px;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+html {
+background-color: white;
+}
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+font-size: 85%;
+margin: 0;
+hyphens: manual;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Security audit (mx.crypto 0.2.0)</h1>
+</header>
+<!--
+%\VignetteEngine{simplermarkdown::mdweave_to_html}
+%\VignetteIndexEntry{Security audit (mx.crypto 0.2.0)}
+-->
+<h1 id="security-audit-mx.crypto-0.2.0">Security audit: mx.crypto
+0.2.0</h1>
+<p><strong>Audit date:</strong> 2026-05-13. <strong>Subject:</strong>
+<code>mx.crypto</code> 0.1.0 (vodozemac 0.10.0 pin) → 0.2.0 with the
+fixes described here. <strong>Trigger:</strong> Soatok’s 2026-02-17
+disclosure of cryptographic issues in vodozemac (<a href="https://soatok.blog/2026/02/17/cryptographic-issues-in-matrixs-rust-library-vodozemac/">blog
+post</a>). The upstream fixes for the most severe finding
+(non-contributory Diffie-Hellman) shipped in vodozemac 0.10.0. The point
+of this audit is not to stop there — it’s to check whether
+<strong>mx.crypto</strong> itself is positioned to take advantage of
+those fixes and to give callers what they need to validate untrusted
+Matrix key material.</p>
+<h2 id="scope-and-threat-model">1. Scope and threat model</h2>
+<p><code>mx.crypto</code> is a thin R wrapper over the Olm + Megolm
+primitives in vodozemac. It sits beside <code>mx.api</code> (Matrix HTTP
+transport), and a higher-level package (eventually
+<code>mx.client</code>) is expected to compose the two into a real
+client. The threat model for the wrapper layer is narrow but
+load-bearing:</p>
+<ul>
+<li>A <strong>malicious homeserver</strong> can return anything in
+<code>/_matrix/client/v3/keys/query</code>,
+<code>/_matrix/client/v3/keys/claim</code>, or
+<code>/_matrix/client/v3/sync</code>. <code>mx.crypto</code> must not
+let those responses corrupt session state or silently leak
+plaintext.</li>
+<li>A <strong>compromised remote device</strong> can submit signed
+material that satisfies structural checks but originates from the wrong
+identity. <code>mx.crypto</code> cannot detect this on its own —
+identity pinning lives above this layer — but <code>mx.crypto</code>
+must at minimum expose verification primitives so callers can implement
+TOFU / cross-signing without rolling their own ed25519 glue.</li>
+<li>A <strong>buggy or hostile peer</strong> can ship malformed Olm /
+Megolm ciphertext or pre-key messages. <code>mx.crypto</code> must fail
+closed (clear error, no partial state mutation) rather than returning
+ambiguous values.</li>
+</ul>
+<p>Out of scope for the wrapper: cross-signing, SAS verification, and
+the v2 MAC migration. Those land in a higher layer.</p>
+<h2 id="dependency-baseline-vodozemac-0.10.0">2. Dependency baseline:
+vodozemac 0.10.0</h2>
+<p>The Soatok post called out one <strong>high-severity</strong> issue
+and a handful of lower-severity issues. The high-severity issue is the
+one that matters most:</p>
+<blockquote>
+<p>Olm Diffie-Hellman accepts the identity element. When this occurs,
+all three DH computations produce zero output, resulting in a
+predictable session key.</p>
+</blockquote>
+<p>In vodozemac 0.10.0 the fix is already in place. The relevant code in
+the vendored crate (<code>src/types/curve25519.rs:52</code>) is:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">/// Returns `None` if one of the keys does not show contributory behavior</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">/// resulting in an all-zero shared secret.</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> diffie_hellman(<span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span> their_public_key<span class="op">:</span> <span class="op">&amp;</span>Curve25519PublicKey)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">-&gt;</span> <span class="dt">Option</span><span class="op">&lt;</span>SharedSecret<span class="op">&gt;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> shared_secret <span class="op">=</span> <span class="kw">self</span><span class="op">.</span><span class="dv">0</span><span class="op">.</span>diffie_hellman(<span class="op">&amp;</span>their_public_key<span class="op">.</span>inner)<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> shared_secret<span class="op">.</span>was_contributory() <span class="op">{</span> <span class="cn">Some</span>(shared_secret) <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span> <span class="cn">None</span> <span class="op">}</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><code>Shared3DHSecret::new</code> and
+<code>RemoteShared3DHSecret::new</code> propagate the <code>None</code>
+with <code>?</code>. A dedicated regression test
+(<code>triple_diffie_hellman_non_contributory_key</code>) builds an
+all-zero remote one-time key and asserts that
+<code>Shared3DHSecret::new</code> returns <code>None</code>. Our pinned
+0.10.0 ships that test and that fix.</p>
+<p>Strict Ed25519 verification is also the default in 0.10.0
+(<code>src/types/ed25519.rs</code>), with the laxer
+<code>#[cfg(fuzzing)]</code> form only compiled when the
+<code>fuzzing</code> Cargo feature is enabled. mx.crypto does not enable
+that feature in its build.</p>
+<p>So the <em>primitive</em> is correct. The remaining question is
+whether mx.crypto correctly propagates the primitive’s results.</p>
+<h2 id="surface-map">3. Surface map</h2>
+<p>Before 0.2.0 mx.crypto exposed 24 functions covering:</p>
+<table style="width:97%;">
+<colgroup>
+<col style="width: 46%" />
+<col style="width: 51%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Group</th>
+<th style="text-align: left;">Functions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Account</td>
+<td style="text-align: left;"><code>mxc_account_new</code>,
+<code>mxc_account_identity_keys</code>, <code>mxc_account_sign</code>,
+<code>mxc_account_generate_one_time_keys</code>,
+<code>mxc_account_one_time_keys</code>,
+<code>mxc_account_mark_published</code>,
+<code>mxc_account_fallback_key</code>, <code>mxc_account_pickle</code>,
+<code>mxc_account_unpickle</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Olm</td>
+<td style="text-align: left;"><code>mxc_olm_create_outbound</code>,
+<code>mxc_olm_create_inbound</code>, <code>mxc_olm_encrypt</code>,
+<code>mxc_olm_decrypt</code>, <code>mxc_olm_session_pickle</code>,
+<code>mxc_olm_session_unpickle</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Megolm</td>
+<td style="text-align: left;"><code>mxc_megolm_outbound_new</code>,
+<code>mxc_megolm_outbound_info</code>, <code>mxc_megolm_encrypt</code>,
+<code>mxc_megolm_outbound_pickle</code>,
+<code>mxc_megolm_outbound_unpickle</code>,
+<code>mxc_megolm_inbound_new</code>, <code>mxc_megolm_decrypt</code>,
+<code>mxc_megolm_inbound_pickle</code>,
+<code>mxc_megolm_inbound_unpickle</code></td>
+</tr>
+</tbody>
+</table>
+<p>What was <strong>missing</strong> was any way to verify signatures.
+<code>mxc_account_sign</code> existed; nothing on the other side. That
+meant:</p>
+<ul>
+<li><code>/keys/query</code> could return arbitrary attacker-chosen
+ed25519 + curve25519 keys for a target device and no caller could check
+the self-signature.</li>
+<li><code>/keys/claim</code> could return OTKs signed under any ed25519
+key the homeserver felt like and no caller could check.</li>
+</ul>
+<p>0.2.0 adds three exports plus one internal Rust binding:</p>
+<ul>
+<li><code>mxc_ed25519_verify(public_key, message, signature)</code> —
+thin vodozemac binding (uses <code>verify_strict</code>).</li>
+<li><code>mxc_verify_device_keys(device_keys, expected_user_id, expected_device_id, required_algorithms = NULL)</code>
+— full structural + signature check for a <code>/keys/query</code>
+device entry. <code>required_algorithms = NULL</code> means “both Olm
+and Megolm” (i.e. <code>m.olm.v1.curve25519-aes-sha2</code> and
+<code>m.megolm.v1.aes-sha2</code>); pass <code>character(0)</code> to
+skip the algorithms check.</li>
+<li><code>mxc_verify_one_time_key(algorithm_key_id, key_object, signing_ed25519, expected_user_id, expected_device_id)</code>
+— same for a <code>/keys/claim</code> entry.
+<code>algorithm_key_id</code> is the outer
+<code>&quot;&lt;algorithm&gt;:&lt;key_id&gt;&quot;</code> map key from the claim
+response so the helper can reject anything but
+<code>signed_curve25519</code>.</li>
+</ul>
+<p>Internal-only: <code>mxc_curve25519_is_valid()</code> is a Rust
+binding (not exported) used by <code>mxc_verify_one_time_key</code> to
+confirm the OTK’s <code>key</code> value really decodes to a 32-byte
+curve25519 public key, so a signed-but-malformed key cannot pass.</p>
+<p>The two high-level helpers are pure R; they call
+<code>mxc_ed25519_verify</code> + <code>mxc_curve25519_is_valid</code>
+(Rust) and <code>mx.api::mx_canonical_json</code> (pure R) for the
+signed-bytes reconstruction.</p>
+<h2 id="canonical-json">4. Canonical JSON</h2>
+<p><code>mx.crypto</code> does not implement canonical JSON itself — it
+consumes the output of <code>mx.api::mx_canonical_json()</code>, which
+was audited separately when those endpoints landed in
+<code>mx.api</code> 0.2.0. Key properties of that encoder (97-assertion
+test suite):</p>
+<ul>
+<li>Locale-independent key sort (UTF-8 byte order, radix sort).</li>
+<li>Integers only (<code>[-(2^53)+1, (2^53)-1]</code>), no floats, no
+exponents.</li>
+<li>Rejects NaN, Inf, NA, NA object keys, duplicate object keys.</li>
+<li>Non-ASCII passes through as raw UTF-8 bytes; control chars
+<code>0x01-0x1F</code> use the spec-defined <code>\b \f \n \r \t</code>
+named escapes or <code>\u</code>-form.</li>
+<li><code>I()</code> forces array encoding (matches jsonlite).</li>
+</ul>
+<p>The encoder is hand-rolled — not a jsonlite wrapper — because byte
+stability across implementations is the entire point. Letting another
+package’s default flags drift would silently break signature
+verification across clients.</p>
+<h2 id="finding-high-mxc_olm_create_outbound-swallowed-sessioncreationerror">5.
+Finding (HIGH): <code>mxc_olm_create_outbound</code> swallowed
+<code>SessionCreationError</code></h2>
+<p>vodozemac’s <code>Account::create_outbound_session</code> has this
+signature:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">pub</span> <span class="kw">fn</span> create_outbound_session(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span><span class="kw">self</span><span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    session_config<span class="op">:</span> SessionConfig<span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    identity_key<span class="op">:</span> Curve25519PublicKey<span class="op">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    one_time_key<span class="op">:</span> Curve25519PublicKey<span class="op">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="dt">Result</span><span class="op">&lt;</span>Session<span class="op">,</span> SessionCreationError<span class="op">&gt;</span></span></code></pre></div>
+<p>The
+<code>Result::Err(SessionCreationError::NonContributoryKey)</code>
+variant is exactly how the vodozemac fix surfaces the “remote key is all
+zeros” case to the caller. mx.crypto’s wrapper, however, looked like
+this:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> mxc_olm_create_outbound(<span class="op">...</span>) <span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> sess <span class="op">=</span> acct<span class="op">.</span>create_outbound_session(<span class="pp">SessionConfig::</span>version_1()<span class="op">,</span> id_key<span class="op">,</span> otk)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="pp">RExternalPtr::</span>encode(sess<span class="op">,</span> TAG_OLM_SESSION<span class="op">,</span> pc)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><code>RExternalPtr::encode&lt;T&gt;</code> is generic; it happily
+boxed a <code>Result&lt;Session, _&gt;</code> into an external pointer
+that R hands back to the caller, with the external-pointer tag claiming
+it was a <code>Session</code>. Downstream code
+(<code>mxc_olm_encrypt</code>, <code>mxc_olm_decrypt</code>) then did
+<code>ext.decode_mut::&lt;Session&gt;()</code> and used those bytes as
+if they were a <code>Session</code>. That is undefined behavior in the
+Rust type-system sense. In practice it “worked” on the happy path
+because of niche-layout coincidences between
+<code>Result&lt;Session, _&gt;</code> and <code>Session</code>; on the
+error path it produced unpredictable behavior.</p>
+<h3 id="reproducer-before-the-fix">Reproducer (before the fix)</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mx.crypto)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>acct <span class="ot">&lt;-</span> <span class="fu">mxc_account_new</span>()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>zero <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">base64_enc</span>(<span class="fu">as.raw</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">32</span>)))  <span class="co"># 32-byte zero key</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>sess <span class="ot">&lt;-</span> <span class="fu">mxc_olm_create_outbound</span>(acct, zero, zero)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(sess)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;externalptr&quot;               &lt;-- no error raised</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mxc_olm_encrypt</span>(sess, <span class="fu">charToRaw</span>(<span class="st">&quot;hi&quot;</span>))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; *** R hangs / aborts / returns garbage ***</span></span></code></pre></div>
+<h3 id="severity">Severity</h3>
+<p>The vodozemac DH-zero attack itself is foiled — vodozemac correctly
+refuses to produce a usable session. But mx.crypto did not surface the
+refusal: a caller has no way to tell “this homeserver fed me a malicious
+key” apart from “my session pointer is broken.” A defense-in-depth audit
+pattern (check, log, alert) cannot fire because the failure is
+invisible.</p>
+<p>There is also a memory-safety concern: the boxed <code>Result</code>
+is freed via R’s external-pointer finalizer with <code>Session</code>’s
+drop glue, which is the wrong drop for the <code>Err</code> variant.
+Whether this actually corrupts the heap depends on internal layout
+details we should not rely on.</p>
+<h3 id="fix">Fix</h3>
+<p>Single line: <code>.stop_str(...)</code> on the
+<code>Result</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> sess <span class="op">=</span> acct</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>create_outbound_session(<span class="pp">SessionConfig::</span>version_1()<span class="op">,</span> id_key<span class="op">,</span> otk)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>stop_str(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;create_outbound_session failed (e.g. non-contributory </span><span class="sc">\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">         Diffie-Hellman key)&quot;</span><span class="op">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    )<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="pp">RExternalPtr::</span>encode(sess<span class="op">,</span> TAG_OLM_SESSION<span class="op">,</span> pc)</span></code></pre></div>
+<h3 id="reproducer-after-the-fix">Reproducer (after the fix)</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mx.crypto)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>acct <span class="ot">&lt;-</span> <span class="fu">mxc_account_new</span>()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>zero <span class="ot">&lt;-</span> jsonlite<span class="sc">::</span><span class="fu">base64_enc</span>(<span class="fu">as.raw</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">32</span>)))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mxc_olm_create_outbound</span>(acct, zero, zero)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: create_outbound_session failed (e.g. non-contributory</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Diffie-Hellman key)</span></span></code></pre></div>
+<p>Covered by <code>inst/tinytest/test_verify.R</code> with
+<code>expect_error(..., pattern = &quot;non-contributory|create_outbound_session&quot;)</code>.</p>
+<h3 id="same-review-on-the-rest-of-the-surface">Same review on the rest
+of the surface</h3>
+<p>Audit pass over every wrapper that consumes a vodozemac
+<code>Result</code>:</p>
+<table style="width:98%;">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 32%" />
+<col style="width: 18%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Function</th>
+<th style="text-align: left;">vodozemac call</th>
+<th style="text-align: left;">Pre-audit</th>
+<th style="text-align: left;">Post-audit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>mxc_olm_create_outbound</code></td>
+<td style="text-align: left;"><code>create_outbound_session</code></td>
+<td style="text-align: left;"><strong>swallowed</strong></td>
+<td style="text-align: left;">propagated</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>mxc_olm_create_inbound</code></td>
+<td style="text-align: left;"><code>create_inbound_session</code></td>
+<td style="text-align: left;">already <code>.stop_str(...)</code></td>
+<td style="text-align: left;">unchanged</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>mxc_olm_encrypt</code></td>
+<td style="text-align: left;"><code>Session::encrypt</code></td>
+<td style="text-align: left;">already <code>.stop_str(...)</code></td>
+<td style="text-align: left;">unchanged</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>mxc_olm_decrypt</code></td>
+<td style="text-align: left;"><code>Session::decrypt</code></td>
+<td style="text-align: left;">already <code>.stop_str(...)</code></td>
+<td style="text-align: left;">unchanged</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>mxc_megolm_inbound_new</code></td>
+<td style="text-align: left;"><code>InboundGroupSession::new</code></td>
+<td style="text-align: left;">returns <code>Self</code> (no error)</td>
+<td style="text-align: left;">unchanged</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>mxc_megolm_encrypt</code></td>
+<td style="text-align: left;"><code>GroupSession::encrypt</code></td>
+<td style="text-align: left;">infallible</td>
+<td style="text-align: left;">unchanged</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>mxc_megolm_decrypt</code></td>
+<td style="text-align: left;"><code>InboundGroupSession::decrypt</code></td>
+<td style="text-align: left;">already <code>.stop_str(...)</code></td>
+<td style="text-align: left;">unchanged</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>*_pickle</code> /
+<code>*_unpickle</code></td>
+<td style="text-align: left;"><code>Pickle::{from,to}_encrypted</code></td>
+<td style="text-align: left;">already <code>.stop_str(...)</code></td>
+<td style="text-align: left;">unchanged</td>
+</tr>
+</tbody>
+</table>
+<p>Only <code>mxc_olm_create_outbound</code> was missing the
+propagation.</p>
+<h2 id="finding-high-no-signature-verification-primitive">6. Finding
+(HIGH): no signature-verification primitive</h2>
+<p>Before 0.2.0 the demo at <code>inst/integration/e2e_demo.R</code>
+(and any other caller) treated the homeserver’s <code>/keys/query</code>
+and <code>/keys/claim</code> responses as ground truth — every signature
+returned in those responses went unchecked. mx.crypto’s threat model
+documented “trust the caller’s identity-pinning layer,” but the caller
+could not actually do that work because mx.crypto did not expose ed25519
+verification.</p>
+<h3 id="fix-three-exports">Fix: three exports</h3>
+<p>The new Rust binding is a thin pass-through to vodozemac’s
+<code>Ed25519PublicKey::verify</code> (which itself calls
+<code>verify_strict</code>):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">#[</span>roxido<span class="at">]</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> mxc_ed25519_verify(public_key_b64<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span><span class="op">,</span> message<span class="op">:</span> <span class="op">&amp;</span>RObject<span class="op">,</span> signature_b64<span class="op">:</span> <span class="op">&amp;</span><span class="dt">str</span>) <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> pk <span class="op">=</span> <span class="pp">Ed25519PublicKey::</span>from_base64(public_key_b64)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>stop_str(<span class="st">&quot;invalid ed25519 public key (base64)&quot;</span>)<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> sig <span class="op">=</span> <span class="pp">Ed25519Signature::</span>from_base64(signature_b64)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">.</span>stop_str(<span class="st">&quot;invalid ed25519 signature (base64 / length)&quot;</span>)<span class="op">;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> msg <span class="op">=</span> raw_bytes(message)<span class="op">;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> ok <span class="op">=</span> pk<span class="op">.</span>verify(msg<span class="op">,</span> <span class="op">&amp;</span>sig)<span class="op">.</span>is_ok()<span class="op">;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    ok<span class="op">.</span>to_r(pc)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>The two R helpers (<code>mxc_verify_device_keys</code>,
+<code>mxc_verify_one_time_key</code>) do the Matrix-spec dance around
+it:</p>
+<ol type="1">
+<li>Strip <code>signatures</code> and <code>unsigned</code> from the
+object.</li>
+<li>Canonicalize the remainder.</li>
+<li>Verify against the ed25519 key the object claims for itself
+(<code>mxc_verify_device_keys</code>) or the ed25519 key passed in by
+the caller from a previously verified device record
+(<code>mxc_verify_one_time_key</code>).</li>
+</ol>
+<p>Both helpers fail closed: every structural problem, every signer
+mismatch, and every signature-bytes mismatch raises an error rather than
+returning a value the caller might use by accident.</p>
+<h3 id="hostile-homeserver-fixtures">Hostile-homeserver fixtures</h3>
+<p><code>inst/tinytest/test_verify.R</code> builds a real signed
+device-keys object and then mutates it the way a hostile homeserver
+would. Every variant must raise:</p>
+<table style="width:97%;">
+<colgroup>
+<col style="width: 48%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Mutation</th>
+<th style="text-align: left;">Expected error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Wrong <code>expected_user_id</code></td>
+<td style="text-align: left;">“user_id mismatch”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wrong <code>expected_device_id</code></td>
+<td style="text-align: left;">“device_id mismatch”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>algorithms</code> absent</td>
+<td style="text-align: left;">“missing ‘algorithms’”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>algorithms</code> present but
+missing <code>m.olm.v1.curve25519-aes-sha2</code></td>
+<td style="text-align: left;">“missing required entries”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>algorithms</code> empty list</td>
+<td style="text-align: left;">“non-empty”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>keys</code> missing
+<code>curve25519:&lt;dev&gt;</code></td>
+<td style="text-align: left;">“missing curve25519”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>keys</code> missing
+<code>ed25519:&lt;dev&gt;</code></td>
+<td style="text-align: left;">“missing ed25519”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>signatures</code> block absent</td>
+<td style="text-align: left;">“unsigned”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Signature only under attacker’s
+user_id</td>
+<td style="text-align: left;">“no signatures from”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Signature attached under
+<code>ed25519:OTHERDEV</code></td>
+<td style="text-align: left;">“no ed25519:ALICEDEV signature”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>keys.curve25519</code> swapped for
+another device’s</td>
+<td style="text-align: left;">“did not verify”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OTK outer key uses
+<code>curve25519:</code> instead of <code>signed_curve25519:</code></td>
+<td style="text-align: left;">“does not start with”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OTK outer key uses
+<code>signed_ed25519:</code></td>
+<td style="text-align: left;">“does not start with”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OTK outer key empty / NA</td>
+<td style="text-align: left;">“non-empty”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OTK signed by attacker’s ed25519</td>
+<td style="text-align: left;">“did not verify”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OTK missing <code>key</code></td>
+<td style="text-align: left;">“missing ‘key’”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OTK unsigned</td>
+<td style="text-align: left;">“unsigned”</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">OTK <code>key</code> field tampered
+with</td>
+<td style="text-align: left;">“did not verify”</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">OTK <code>key</code> validly signed but
+not a 32-byte curve25519 key</td>
+<td style="text-align: left;">“valid curve25519 public key”</td>
+</tr>
+</tbody>
+</table>
+<p>The full test suite is 34 assertions and lives in
+<code>inst/tinytest/test_verify.R</code>. Two design choices worth
+flagging:</p>
+<ul>
+<li><code>mxc_verify_device_keys()</code> validates
+<code>algorithms</code> against a caller-supplied required list
+(default: both Olm + Megolm). The default forces an explicit opt-in if
+you want to accept a device that advertises neither algorithm — there is
+no scenario in our current callers where that should silently pass.</li>
+<li><code>mxc_verify_one_time_key()</code> takes the outer
+<code>&quot;&lt;algorithm&gt;:&lt;key_id&gt;&quot;</code> map key as a first
+argument so it can reject anything but <code>signed_curve25519</code>,
+and it decodes the <code>key</code> value through vodozemac’s
+<code>Curve25519PublicKey::from_base64</code> (via the new internal
+<code>mxc_curve25519_is_valid</code> binding) so a signed-but-malformed
+key cannot pass.</li>
+</ul>
+<h3 id="what-this-does-not-cover">What this does NOT cover</h3>
+<p>Identity pinning. <code>mxc_verify_device_keys</code> returns the
+ed25519 key the object claimed for itself, validated as self-consistent
+— it does not say “this is really <span class="citation" data-cites="alice">@alice</span>’s ed25519.” That belongs to a layer
+above (TOFU on first contact, then cross-signing). The helper’s
+docstring calls this out explicitly so callers don’t assume
+otherwise.</p>
+<h2 id="dh-session-error-propagation-full-pass">7. DH / session error
+propagation (full pass)</h2>
+<p>Recap of section 5 with a wider lens. mx.crypto’s R-side error
+handling on the happy path is straightforward —
+<code>.Call(.mxc_*)</code> errors propagate as R
+<code>simpleError</code>s. The risk is silent corruption: returning what
+looks like a valid externalptr/value when the underlying primitive
+errored. Confirmed: post-fix, every fallible vodozemac call surfaces its
+error as a clean R error before any external-pointer is handed back. No
+partial-state mutation paths remain.</p>
+<h2 id="pickle-and-local-state">8. Pickle and local state</h2>
+<p><code>mxc_*_pickle()</code> takes a caller-supplied 32-byte raw
+vector. The pickle format encrypts the serialised account/session state
+under that key. Behavior:</p>
+<ul>
+<li><strong>Wrong key</strong>: <code>mxc_*_unpickle()</code> errors
+cleanly (already covered by <code>test_account.R</code>).</li>
+<li><strong>Corrupted blob</strong>: errors at decryption.</li>
+<li><strong>Right key, wrong tag (e.g. an Olm session pickle handed to
+<code>mxc_megolm_inbound_unpickle</code>)</strong>: errors at
+deserialization.</li>
+</ul>
+<p>Spec caveat: vodozemac’s pickle uses a deterministic IV. The
+implication is that reusing the same pickle key across pickles can leak
+ordering information. The recommended discipline is <strong>one pickle
+key per Account / Session</strong>, which is what callers should do
+anyway for separation-of-concerns reasons. This is now stated in
+<code>SECURITY.md</code>.</p>
+<h2 id="other-soatok-findings-mapped-to-our-pin">9. Other Soatok
+findings, mapped to our pin</h2>
+<table style="width:97%;">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 32%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Finding</th>
+<th style="text-align: left;">Severity</th>
+<th style="text-align: left;">Our pin status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Olm DH identity element accepted</td>
+<td style="text-align: left;"><strong>High</strong></td>
+<td style="text-align: left;">Fixed upstream + now propagated in
+mx.crypto (section 5)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Downgrade v2→v1 MAC</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">Olm message-MAC versioning lives below
+mx.crypto; tracked for the v2 migration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ECIES CheckCode 6-bit entropy</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">Affects QR-SAS verification, which
+mx.crypto does not expose</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Drop message keys after 40 skipped</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">Affects out-of-order delivery edge cases
+for buffered clients; mx.crypto inherits upstream behavior</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pickle deterministic IV</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">Documented in <code>SECURITY.md</code>;
+per-account pickle keys recommended</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>#[cfg(fuzzing)]</code> disables
+MAC</td>
+<td style="text-align: left;">None</td>
+<td style="text-align: left;">Only active under the <code>fuzzing</code>
+Cargo feature; mx.crypto’s build does not enable it</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Strict Ed25519 off by default</td>
+<td style="text-align: left;">Low</td>
+<td style="text-align: left;">vodozemac 0.10.0 uses
+<code>verify_strict</code> in the non-fuzzing path; our
+<code>mxc_ed25519_verify</code> calls that path</td>
+</tr>
+</tbody>
+</table>
+<h2 id="api-boundary-with-mx.api">10. API boundary with mx.api</h2>
+<p><code>mx.crypto</code> deliberately does not depend on
+<code>mx.api</code> for runtime crypto — Suggests only, used by
+<code>mxc_verify_device_keys</code> /
+<code>mxc_verify_one_time_key</code> to canonicalize signed payloads.
+The bright line:</p>
+<ul>
+<li><code>mx.api</code> knows about HTTP and JSON; it does no signature
+work.</li>
+<li><code>mx.crypto</code> knows about ed25519, curve25519, Olm, Megolm;
+it does no HTTP work.</li>
+<li>A higher layer (eventually <code>mx.client</code>) is expected to
+thread them together with identity pinning, key storage, and the
+broadcast / receive loop.</li>
+</ul>
+<p>The integration demo at <code>inst/integration/e2e_demo.R</code> is a
+working example of that thread. With these audit fixes in place, the
+demo should also use the new verify helpers before opening Olm sessions
+— that follow-up is captured in section 11.</p>
+<h2 id="pending-follow-ups">11. Pending follow-ups</h2>
+<p>Not in scope for this audit; tracked for later versions.</p>
+<ul>
+<li>Wire <code>mxc_verify_device_keys</code> +
+<code>mxc_verify_one_time_key</code> into the <code>e2e_demo.R</code>
+broadcast loop so the demo reflects best practice.</li>
+<li>TOFU / cross-signing helpers (master / self / user signing
+keys).</li>
+<li>SAS verification (<code>m.key.verification.start</code> etc.).</li>
+<li>v2 Olm MAC migration when the Matrix spec lands.</li>
+<li>Track upstream vodozemac for any future disclosures and pull the
+changelog into <code>NEWS.md</code> on each bump.</li>
+</ul>
+<h2 id="verification">12. Verification</h2>
+<p>Build + test results from this audit branch:</p>
+<table style="width:97%;">
+<colgroup>
+<col style="width: 51%" />
+<col style="width: 46%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Check</th>
+<th style="text-align: left;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>tinytest::test_package(&quot;mx.crypto&quot;)</code></td>
+<td style="text-align: left;">22 + 18 + 11 + 34 = 85 assertions, all
+pass</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>tinypkgr::check()</code></td>
+<td style="text-align: left;">0 errors, 0 warnings (1 standard “new
+submission” note retained)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Live homeserver e2e demo</td>
+<td style="text-align: left;">Decrypted plaintext round-trips through 4
+share targets (FluffyChat verified)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Zero-curve25519 regression</td>
+<td style="text-align: left;">Errors cleanly with
+<code>&quot;non-contributory&quot;</code> message</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Tampered device_keys</td>
+<td style="text-align: left;">Each mutation raises the expected,
+distinct error</td>
+</tr>
+</tbody>
+</table>
+<h2 id="changelog">Changelog</h2>
+<p><code>mx.crypto 0.2.0</code>:</p>
+<ul>
+<li><strong>HIGH</strong>: <code>mxc_olm_create_outbound</code> now
+propagates <code>SessionCreationError</code> (previously swallowed;
+non-contributory DH keys silently produced a corrupt session
+pointer).</li>
+<li><strong>HIGH</strong>: Added <code>mxc_ed25519_verify</code>,
+<code>mxc_verify_device_keys</code>,
+<code>mxc_verify_one_time_key</code> so callers can validate
+<code>/keys/query</code> and <code>/keys/claim</code> responses before
+using them.</li>
+<li><code>SECURITY.md</code> added.</li>
+<li>Vignette: this document.</li>
+<li>DESCRIPTION: bumped to 0.2.0; added
+<code>mx.api (&gt;= 0.2.0)</code> and <code>simplermarkdown</code> to
+Suggests; <code>VignetteBuilder: simplermarkdown</code>.</li>
+</ul>
+</body>
+</html>
