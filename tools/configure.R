@@ -362,6 +362,18 @@ render_env_assignments <- function(vars) {
   paste(assignments, collapse = " ")
 }
 
+windows_target <- function() {
+  if(grepl("aarch", R.version$platform)){
+    "aarch64-pc-windows-gnullvm"
+  } else if(grepl("clang", Sys.getenv('R_COMPILED_BY'))){
+    "x86_64-pc-windows-gnullvm"
+  } else if(grepl("i386", R.version$platform)){
+    "i686-pc-windows-gnu"
+  } else {
+    "x86_64-pc-windows-gnu"
+  }
+}
+
 render_platform_makevars <- function(
   cargo_path,
   rustc_path,
@@ -384,20 +396,31 @@ render_platform_makevars <- function(
   unlink(c(makevars, makevars_win), force = TRUE)
 
   if (identical(sysname, "Windows")) {
-    gnu_host <- identical(host_triple, "x86_64-pc-windows-gnu")
-    if (gnu_host) {
-      note(
-        "GNU Windows host detected; building without --target (host = target)."
-      )
+    target <- windows_target()
+    # Passing --target changes what RUSTFLAGS applies to: cargo stops
+    # applying it to host artefacts, meaning build scripts and
+    # proc-macros. On the Rtools GNU toolchain those need
+    # -C link-self-contained=yes, or the build-script binaries cargo
+    # produces cannot be executed and the build dies with
+    # "%1 is not a valid Win32 application" (os error 193). CRAN's
+    # Windows builder hit exactly that on 0.2.1.
+    #
+    # So when the target is already the host we build natively and keep
+    # the flag, which is what 0.2.0 did and what CRAN accepted. Every
+    # other Windows target still gets an explicit --target, which is the
+    # part that fixed ARM64 (#3).
+    native_gnu <- identical(target, "x86_64-pc-windows-gnu") &&
+        identical(host_triple, "x86_64-pc-windows-gnu")
+    if (native_gnu) {
+      note("Host is x86_64-pc-windows-gnu; building natively (host = target).")
       target_decl <- ""
       rust_target_lib <- "$(RUST_DIR)/target/release/librust.a"
       target_flag <- ""
-      cargo_pre <- 'unset CARGO_BUILD_TARGET && export RUSTFLAGS="-C link-self-contained=yes" && '
+      cargo_pre <- paste0("unset CARGO_BUILD_TARGET && ",
+                          "export RUSTFLAGS=\"-C link-self-contained=yes\" && ")
     } else {
-      note(
-        "Non-GNU Windows host detected; cross-compiling with --target=x86_64-pc-windows-gnu."
-      )
-      target_decl <- "TARGET = x86_64-pc-windows-gnu"
+      note(paste0("Compiling with --target=", target))
+      target_decl <- paste("TARGET =", target)
       rust_target_lib <- "$(RUST_DIR)/target/$(TARGET)/release/librust.a"
       target_flag <- " --target=$(TARGET)"
       cargo_pre <- ""

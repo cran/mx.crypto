@@ -1,7 +1,7 @@
-c3e8f9a2fed9e246d689af7ca387ea10 *DESCRIPTION
+34da9024373942713c0b805e7f801efc *DESCRIPTION
 ffb089eb86260292f993f94c0bc07b80 *LICENSE
 62860e7293506dd788c1ec592212c8ff *NAMESPACE
-6a916826d2abfe15cb5e4bdceb4c3cee *NEWS.md
+600104e093045e7edb847fd2403a4f32 *NEWS.md
 d254679b81c43799e6007f5918c2b4b9 *R/account.R
 40f5d8172d4274c1f744a73a74a35c92 *R/megolm.R
 3d9490c2bad872589d517e7553ae0509 *R/mx.crypto-package.R
@@ -9,7 +9,7 @@ d254679b81c43799e6007f5918c2b4b9 *R/account.R
 e3df5d4fdd737a6f2c6ff58c5919df4c *R/roxido.R
 a1ededb97febb67d2b9beb77cd51a6aa *R/verify.R
 fe49773633b9f8764be6d076af4e6a58 *README.md
-f19f4ffddb2a1b0013f1a129a03ac92c *build/vignette.rds
+5915cbad27826fbfc907c7b0ced69ee2 *build/vignette.rds
 eab3a55138f1d5216f8d568953de678c *cleanup
 0de7974a064ab88da4d2d3d5a225d7c3 *cleanup.win
 637d1da15826583833830bb76d1eb60c *configure
@@ -72,5 +72,5 @@ f0f6d90fb693cd1a10cc99db650e9aae *src/rust/roxido_macro/src/lib.rs
 7aac29794187043839ccc7636e4cc599 *src/rust/vendor.tar.xz
 1d9da2c34022e1c984f8a7f4497daefe *src/shims.c
 fda70a7621493d4d0339353ef30c1279 *tests/tinytest.R
-ed42c820a25a116b522e95854f730c05 *tools/configure.R
+7bdbd2770b1d7488e9706c0e078ce1de *tools/configure.R
 d95eb9b4534abf2c16a92caa7b6565cc *vignettes/security-audit.Rmd
