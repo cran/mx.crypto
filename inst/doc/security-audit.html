@@ -272,8 +272,10 @@ Megolm ciphertext or pre-key messages. <code>mx.crypto</code> must fail
 closed (clear error, no partial state mutation) rather than returning
 ambiguous values.</li>
 </ul>
-<p>Out of scope for the wrapper: cross-signing, SAS verification, and
-the v2 MAC migration. Those land in a higher layer.</p>
+<p>Out of scope for the wrapper: cross-signing protocol/trust
+orchestration, SAS verification, and the v2 MAC migration. The wrapper
+now exposes encrypted Ed25519 signing-key primitives; policy and Matrix
+HTTP operations remain in a higher layer.</p>
 <h2 id="dependency-baseline-vodozemac-0.10.0">2. Dependency baseline:
 vodozemac 0.10.0</h2>
 <p>The Soatok post called out one <strong>high-severity</strong> issue
@@ -831,8 +833,8 @@ demo should also use the new verify helpers before opening Olm sessions
 <li>Wire <code>mxc_verify_device_keys</code> +
 <code>mxc_verify_one_time_key</code> into the <code>e2e_demo.R</code>
 broadcast loop so the demo reflects best practice.</li>
-<li>TOFU / cross-signing helpers (master / self / user signing
-keys).</li>
+<li>Cross-signing trust and Matrix protocol orchestration (the raw
+signing-key helpers landed in 0.2.1.1).</li>
 <li>SAS verification (<code>m.key.verification.start</code> etc.).</li>
 <li>v2 Olm MAC migration when the Matrix spec lands.</li>
 <li>Track upstream vodozemac for any future disclosures and pull the

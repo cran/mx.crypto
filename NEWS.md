@@ -1,3 +1,30 @@
+# mx.crypto 0.2.2
+
+* Release the cross-signing, forwarded Megolm, and SAS primitives added in
+  development versions 0.2.1.1 and 0.2.1.2. No code changes since 0.2.1.2.
+
+# mx.crypto 0.2.1.2
+
+* New: ephemeral SAS key agreement, display-byte derivation, and constant-time
+  MAC verification through vodozemac. SAS handles reject wrong pointer types,
+  low-order peer keys, and repeated use of an ephemeral secret. Protocol
+  orchestration and durable user trust remain in mx.client.
+
+* New: SHA-256 SAS commitments use sha2 0.10.9, now declared directly.
+  This crate was already bundled and locked through vodozemac; no vendored
+  source bytes or R dependencies were added.
+
+# mx.crypto 0.2.1.1
+
+* New: `mxc_signing_key_*()` provides durable Ed25519 signing keys for
+  Matrix cross-signing. Private state uses the same encrypted pickle format
+  and 32-byte local store key as device accounts.
+* New: `mxc_megolm_inbound_export()`,
+  `mxc_megolm_inbound_import()`, and `mxc_megolm_inbound_info()` implement
+  the cryptographic half of `m.forwarded_room_key`, preserving the first
+  known message index and marking imported sessions unverified as required
+  by Megolm.
+
 # mx.crypto 0.2.1
 
 * `tools/configure.R` picks the Rust target on Windows from the running
