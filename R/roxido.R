@@ -1,5 +1,7 @@
 # Automatically regenerated. Do not edit.
 
+# .Call(.attachment__mxc_attachment_decrypt, data, key, iv, sha256)
+# .Call(.attachment__mxc_attachment_encrypt, data)
 # .Call(.mxc_account_fallback_key, account)
 # .Call(.mxc_account_generate_one_time_keys, account, n)
 # .Call(.mxc_account_identity_keys, account)

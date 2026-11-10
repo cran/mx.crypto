@@ -1,3 +1,28 @@
+# mx.crypto 0.3.0
+
+* Release the Matrix v2 attachment encryption added in development version
+  0.2.2.2 and the unpadded base64 fix for Olm message bodies from 0.2.2.1.
+  No code changes since 0.2.2.2.
+
+# mx.crypto 0.2.2.2
+
+* Add Matrix v2 attachment encryption with fresh AES-256-CTR keys and
+  nonces, and SHA-256 verification before decryption. These byte-oriented
+  primitives use RustCrypto and return metadata for an encrypted room event;
+  they do not perform HTTP requests or modify account state.
+
+# mx.crypto 0.2.2.1
+
+* Fix: decode Olm message bodies with padding-indifferent base64. libolm
+  padded them; vodozemac (matrix-dart-sdk 10.x, Element) emits them
+  unpadded, so the previous canonical-padding decoder rejected every
+  inbound body whose length was not a multiple of 4 ("prekey body is not
+  valid base64" / "olm body is not valid base64"), dropping it. Both
+  `mxc_olm_create_inbound()` and `mxc_olm_decrypt()` now accept padded and
+  unpadded bodies; encoding stays padded, which peers already accept. This
+  restores inbound Olm from modern (vodozemac) clients, including MatrixRTC
+  call encryption keys.
+
 # mx.crypto 0.2.2
 
 * Release the cross-signing, forwarded Megolm, and SAS primitives added in
