@@ -1,3 +1,28 @@
+# mx.crypto 0.3.1
+
+* Release the CRAN check fixes from development versions 0.3.0.1 (drop
+  'proc-macro-error2' from the vendored crates) and 0.3.0.2 (link
+  `-lsynchronization` on Windows for rustc 1.100). No code changes since
+  0.3.0.2.
+
+# mx.crypto 0.3.0.2
+
+* Fix: link the Windows build against `-lsynchronization`. From rustc
+  1.100.0 the Rust standard library calls `WaitOnAddress` and
+  `WakeByAddressSingle`/`WakeByAddressAll`, so the Rtools link failed on
+  every Windows build with the newest stable Rust. No R code or API
+  changes.
+
+# mx.crypto 0.3.0.1
+
+* Fix: update the bundled 'matrix-pickle' and 'matrix-pickle-derive' crates
+  from 0.2.2 to 0.2.3. This removes 'proc-macro-error2' 2.0.1 and
+  'proc-macro-error-attr2' from the vendored sources; cargo reported that
+  'proc-macro-error2' contains code a future version of Rust will reject,
+  which CRAN's Fedora and M1mac checks flagged as an installation WARNING.
+  'vodozemac' stays at 0.10.0 and the minimum rustc stays at 1.85. No R
+  code or API changes.
+
 # mx.crypto 0.3.0
 
 * Release the Matrix v2 attachment encryption added in development version

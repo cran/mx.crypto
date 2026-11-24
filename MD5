@@ -1,7 +1,7 @@
-bba91623cf3c0dc456a69de27a466d74 *DESCRIPTION
+7a1c92e338c7793c5e0bf01c076e4d10 *DESCRIPTION
 ffb089eb86260292f993f94c0bc07b80 *LICENSE
 f6ef70ed2c7ecd632bddd49330d92518 *NAMESPACE
-6afe0530495b392c15c59eb0a91a56ef *NEWS.md
+e5b304f3ed314d3b6a370f5f1c1e362d *NEWS.md
 811d24472c3f4da8c6336a5fc4f92752 *R/account.R
 6d2e4ad1da2b88e71cee465353c71b42 *R/attachment.R
 de2a894bdc72c48404f599bbce4875ca *R/cross-signing.R
@@ -12,7 +12,7 @@ b6aea227a11ebd4a061758a2f60719dc *R/roxido.R
 660135fcedbd9d70ac77226e9f397785 *R/sas.R
 a1ededb97febb67d2b9beb77cd51a6aa *R/verify.R
 2bb68024a57310aad42c3c17121d075f *README.md
-1af2391b6a82bd2c2543be4791b44cc2 *build/partial.rdb
+340da03341dd0ca826d994ef945d67fd *build/partial.rdb
 2a85026a8d3638817da7de77b2394b5b *build/vignette.rds
 eab3a55138f1d5216f8d568953de678c *cleanup
 0de7974a064ab88da4d2d3d5a225d7c3 *cleanup.win
@@ -79,9 +79,9 @@ ad8e001499485de0ec00f63198cbacbf *man/mxc_signing_key_new.Rd
 1ee4606716b05d0076a5f876a391f39b *man/mxc_verify_device_keys.Rd
 3312dab6f8262dab2cd2919df4608954 *man/mxc_verify_one_time_key.Rd
 7113104a5d5aa2685b16849f4f4f1c48 *src/Makevars.in
-78552209ecbb71c48152a8cd9b69af3c *src/Makevars.win.in
+bee80e5f91aac8608e5caa017598a948 *src/Makevars.win.in
 b809a3ec2f7e16bfe982d721b6598dd6 *src/r_init_shim.c
-acc56212070a5a324082b1468986b64f *src/rust/Cargo.lock
+431ab158529170709d3e9aa5390bdb1e *src/rust/Cargo.lock
 d1de3f763e9cd2d15b16d4f039c42bca *src/rust/Cargo.toml
 21de085b6179ad7e7fbcea8d1a293a55 *src/rust/build.rs
 ff73493082a05e1a64cb1127ef9119d4 *src/rust/rbindings/Cargo.lock
@@ -96,7 +96,7 @@ f0f6d90fb693cd1a10cc99db650e9aae *src/rust/roxido_macro/src/lib.rs
 49d4ffc4affb653bfecc3684b205792c *src/rust/src/attachment.rs
 8f517fdb213921d2da5a57383f3cf085 *src/rust/src/lib.rs
 a48006e370db60fce907105ee82c4a1c *src/rust/src/sas.rs
-e2552c52265279d8df44945ebe4f694d *src/rust/vendor.tar.xz
+d784bdabf1f7a41a50819c261ced0f95 *src/rust/vendor.tar.xz
 1d9da2c34022e1c984f8a7f4497daefe *src/shims.c
 fda70a7621493d4d0339353ef30c1279 *tests/tinytest.R
 7bdbd2770b1d7488e9706c0e078ce1de *tools/configure.R
